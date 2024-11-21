@@ -6,16 +6,20 @@ import {
 } from 'klayr-sdk';
 import { VotingEndpoint } from './endpoint';
 import { VotingMethod } from './method';
+import { PollStore } from './stores/poll';
+import { VoteStore } from './stores/vote';
 
 export class VotingModule extends Modules.BaseModule {
     public endpoint = new VotingEndpoint(this.stores, this.offchainStores);
     public method = new VotingMethod(this.stores, this.events);
     public commands = [];
 
-	// public constructor() {
-	// 	super();
-	// 	// registeration of stores and events
-	// }
+	public constructor() {
+		super();
+		// registeration of stores and events
+		this.stores.register(PollStore, new PollStore(this.name, 0));
+	    this.stores.register(VoteStore, new VoteStore(this.name, 1));
+	}
 
 	public metadata(): Modules.ModuleMetadata {
 		return {
