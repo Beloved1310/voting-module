@@ -62,6 +62,6 @@ export class CreatePollCommand extends Modules.BaseCommand {
 			expiresAt,
 		};
 
-		await pollStore.set(_context, senderAddress, newPoll);
+		await pollStore.set(_context, Buffer.from(pollId), newPoll);
 	}
 }
