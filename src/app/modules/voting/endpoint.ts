@@ -1,6 +1,6 @@
 import { Modules, Types, cryptography } from 'klayr-sdk';
 import { PollStore, PollStoreData } from './stores/poll';
-import { PollOptionsStore, PollOptionStoreData } from './stores/pollOptions';
+import { PollOptionStoreData, PollOptionsStore } from './stores/pollOptions';
 import { VoteStore, VoteStoreData } from './stores/vote';
 
 export class VotingEndpoint extends Modules.BaseEndpoint {
@@ -13,65 +13,48 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 			throw new Error('Parameter address must be a string.');
 		}
 		cryptography.address.validateKlayr32Address(address);
-		// 4. Get the Hello message for the address from the message store
+
 		const pollMessage = await pollStore.get(
 			ctx,
 			cryptography.address.getAddressFromKlayr32Address(address),
 		);
-		// 5. Return the Hello message
 		return pollMessage;
 	}
 
 	public async getPollOptionsVote(
 		ctx: Types.ModuleEndpointContext,
-	): Promise<{ pollMessage: PollStoreData; pollOptionMessage: PollOptionStoreData }> {
+	): Promise<{ pollMessage: PollStoreData; pollOptionMessage: Partial<PollOptionStoreData> }> {
 		const pollStore = this.stores.get(PollStore);
 		const pollOptionsStore = this.stores.get(PollOptionsStore);
 
-		const { address } = ctx.params;
-
-		if (typeof address !== 'string') {
-			throw new Error('Parameter address must be a string.');
+		let pollMessage: PollStoreData;
+		try {
+			pollMessage = await pollStore.get(ctx, Buffer.from('pollId'));
+		} catch (error) {
+			pollMessage = { pollId: '', title: '', description: '', pollCreator: '', expiresAt: '' };
+		}
+		// Get the poll message for the address from the store
+		let pollOptionMessageWithoutPollId: PollOptionStoreData;
+		try {
+			pollOptionMessageWithoutPollId = await pollOptionsStore.get(ctx, Buffer.from('text'));
+		} catch (error) {
+			pollOptionMessageWithoutPollId = { pollId: '', text: '', votes: 0 };
 		}
 
-		cryptography.address.validateKlayr32Address(address);
-
-		// Get the poll message for the address from the store
-		const pollMessage = await pollStore.get(
-			ctx,
-			cryptography.address.getAddressFromKlayr32Address(address),
-		);
-
-		const pollOptionMessage = await pollOptionsStore.get(
-			ctx,
-			cryptography.address.getAddressFromKlayr32Address(address),
-		);
-
+		const { pollId, ...pollOptionMessage } = pollOptionMessageWithoutPollId;
 		// Return the messages
 		return { pollMessage, pollOptionMessage };
 	}
 
-	public async getVoters(
-        ctx: Types.ModuleEndpointContext,
-    ): Promise<VoteStoreData> {
-        const voters = this.stores.get(VoteStore);
-    
-        const { address } = ctx.params;
-    
-        if (typeof address !== 'string') {
-            throw new Error('Parameter address must be a string.');
-        }
-    
-        cryptography.address.validateKlayr32Address(address);
-    
-        // Get the poll message for the address from the store
-        const voteMessage = await voters.get(
-            ctx,
-            cryptography.address.getAddressFromKlayr32Address(address),
-        );
-    
-        // Return the message directly
-        return voteMessage;
-    }
-    
+	public async getVoters(ctx: Types.ModuleEndpointContext): Promise<VoteStoreData> {
+		const voters = this.stores.get(VoteStore);
+		let voteMessage: VoteStoreData;
+		try {
+			voteMessage = await voters.get(ctx, Buffer.from('userId'));
+		} catch (error) {
+			voteMessage = { pollId: '', userId: '', voter: '', text: '' };
+		}
+
+		return voteMessage;
+	}
 }
