@@ -2,27 +2,27 @@ import { Modules } from 'klayr-sdk';
 
 // Define the data structure for the Vote Store
 export interface VoteStoreData {
-    pollId: string;  // ID of the poll that the vote is cast on
-    userId: string;  // ID of the user who cast the vote
-    optionIndex: number; // Index of the option the user voted for
+    pollId: string;  
+    voter: Buffer;  
+    text: string;
 }
 
 // Define the schema for the vote store
 export const voteStoreSchema = {
     $id: 'voting/votes',
     type: 'object',
-    required: ['pollId', 'userId', 'optionIndex'],
+    required: ['pollId', 'userId', 'text'],
     properties: {
         pollId: {
             dataType: 'string',
             fieldNumber: 1,
         },
-        userId: {
-            dataType: 'string',
+        voter: {
+            dataType: Buffer,
             fieldNumber: 2,
         },
-        optionIndex: {
-            dataType: 'number',
+        text: {
+            dataType: 'string',
             fieldNumber: 3,
         },
     },
