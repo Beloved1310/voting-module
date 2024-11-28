@@ -3,7 +3,8 @@ import { Modules } from 'klayr-sdk';
 // Define the data structure for the Vote Store
 export interface VoteStoreData {
     pollId: string;  
-    voter: Buffer;  
+    userId: string;
+    voter: string;  
     text: string;
 }
 
@@ -17,13 +18,17 @@ export const voteStoreSchema = {
             dataType: 'string',
             fieldNumber: 1,
         },
-        voter: {
-            dataType: Buffer,
+        userId: {
+            dataType: 'string',
             fieldNumber: 2,
+        },
+        voter: {
+            dataType: 'string',
+            fieldNumber: 3,
         },
         text: {
             dataType: 'string',
-            fieldNumber: 3,
+            fieldNumber: 4,
         },
     },
 };

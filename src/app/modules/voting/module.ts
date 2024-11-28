@@ -96,14 +96,34 @@ export class VotingModule extends Modules.BaseModule {
             $id: 'voting/getPollOptionsResponse',
             type: 'object',
             properties: {
-                // pollId: {
-				// 	dataType: 'string',
-				// 	fieldNumber: 1,
-				// },
-				// text: {
-				// 	dataType: 'string',
-				// 	fieldNumber: 2,
-				// }
+                pollId: {
+					dataType: 'string',
+					fieldNumber: 1,
+				},
+				text: {
+					dataType: 'string',
+					fieldNumber: 2,
+				},
+				votes: {
+					dataType: 'string',
+					fieldNumber: 3,
+				},
+				title: {
+					dataType: 'string',
+					fieldNumber: 4,
+				},
+				description: {
+					dataType: 'string',
+					fieldNumber: 5,
+				},
+				pollCreator: {
+					dataType: 'string',
+					fieldNumber: 6,
+				},
+				expiresAt: {
+					dataType: 'string',
+					fieldNumber: 7,
+				},
             },
         };
     }
