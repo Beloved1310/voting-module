@@ -1,34 +1,112 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/member-ordering */
 import {
-	Modules,
-	StateMachine,
+    Modules
 } from 'klayr-sdk';
+import { CreatePollCommand } from "./commands/create_poll_command";
+import { CreatePollOptionsCommand } from "./commands/create_poll_options_command";
+import { CreateVoteCommand } from "./commands/create_vote_command";
 import { VotingEndpoint } from './endpoint';
 import { VotingMethod } from './method';
 import { PollStore } from './stores/poll';
 import { VoteStore } from './stores/vote';
+import { PollOptionsStore } from './stores/pollOptions';
 
 export class VotingModule extends Modules.BaseModule {
     public endpoint = new VotingEndpoint(this.stores, this.offchainStores);
     public method = new VotingMethod(this.stores, this.events);
-    public commands = [];
+    public commands = [new CreatePollCommand(this.stores, this.events), new CreateVoteCommand(this.stores, this.events), new CreatePollOptionsCommand(this.stores, this.events)];
 
 	public constructor() {
 		super();
 		// registeration of stores and events
 		this.stores.register(PollStore, new PollStore(this.name, 0));
-	    this.stores.register(VoteStore, new VoteStore(this.name, 1));
+		this.stores.register(VoteStore, new VoteStore(this.name, 1));
+		this.stores.register(PollOptionsStore, new PollOptionsStore(this.name, 2));
 	}
 
 	public metadata(): Modules.ModuleMetadata {
 		return {
 			...this.baseMetadata(),
-			endpoints: [],
+			endpoints: [
+				{
+					name: this.endpoint.getPoll.name,
+					request: this.getPollSchema(),
+					response: this.getPollResponseSchema(),
+				},
+				{
+					name: this.endpoint.getPollOptionsVote.name,
+					request: this.getPollOptionsSchema(),
+					response: this.getPollOptionsResponseSchema(),
+				},
+			],
 			assets: [],
 		};
 	}
 
+
+	public getPollSchema() {
+        return {
+            $id: 'voting/getPoll',
+            type: 'object',
+            properties: {},
+        };
+    }
+
+	public getPollOptionsSchema() {
+        return {
+            $id: 'voting/getPollOption',
+            type: 'object',
+            properties: {},
+        };
+    }
+
+	public getPollResponseSchema() {
+        return {
+            $id: 'voting/getPollResponse',
+            type: 'object',
+            properties: {
+                pollId: {
+					dataType: 'string',
+					fieldNumber: 1,
+				},
+				title: {
+					dataType: 'string',
+					fieldNumber: 2,
+				},
+				description: {
+					dataType: 'string',
+					fieldNumber: 3,
+				},
+				pollCreator:{
+					dataType: 'Buffer',
+					fieldNumber: 4,
+				},
+				expiresAt: {
+					dataType: 'string',
+					fieldNumber: 5,
+				},
+            },
+        };
+    }
+
+
+	public getPollOptionsResponseSchema() {
+        return {
+            $id: 'voting/getPollOptionsResponse',
+            type: 'object',
+            properties: {
+                // pollId: {
+				// 	dataType: 'string',
+				// 	fieldNumber: 1,
+				// },
+				// text: {
+				// 	dataType: 'string',
+				// 	fieldNumber: 2,
+				// }
+            },
+        };
+    }
     // Lifecycle hooks
     // public async init(_args: Modules.ModuleInitArgs): Promise<void> {
 	// 	// initialize this module when starting a node

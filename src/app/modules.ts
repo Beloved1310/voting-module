@@ -4,5 +4,5 @@ import { VotingModule } from "./modules/voting/module";
 
 export const registerModules = (_app: Application): void => {
 
-    app.registerModule(new VotingModule());
+    _app.registerModule(new VotingModule());
 };
