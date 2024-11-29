@@ -150,7 +150,22 @@ export class VotingModule extends Modules.BaseModule {
             $id: 'voting/getVotersResponse',
             type: 'object',
             properties: {
-               
+				pollId: {
+					dataType: 'string',
+					fieldNumber: 1,
+				},
+				userId: {
+					dataType: 'string',
+					fieldNumber: 2,
+				},
+				voter: {
+					dataType: 'string',
+					fieldNumber: 3,
+				},
+				text: {
+					dataType: 'string',
+					fieldNumber: 4,
+				},
             },
         };
     }
