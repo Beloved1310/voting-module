@@ -39,6 +39,11 @@ export class VotingModule extends Modules.BaseModule {
 					request: this.getPollOptionsSchema(),
 					response: this.getPollOptionsResponseSchema(),
 				},
+				{
+					name: this.endpoint.getVoters.name,
+					request: this.getVotersSchema(),
+					response: this.getVotersResponseSchema(),
+				},
 			],
 			assets: [],
 		};
@@ -53,6 +58,18 @@ export class VotingModule extends Modules.BaseModule {
         };
     }
 
+	public getVotersSchema() {
+        return {
+            $id: 'voting/getPoll',
+            type: 'object',
+            properties: {
+				userId: {
+					dataType: 'string',
+					fieldNumber: 1,
+				},
+			},
+        };
+    }
 	public getPollOptionsSchema() {
         return {
             $id: 'voting/getPollOption',
@@ -124,6 +141,16 @@ export class VotingModule extends Modules.BaseModule {
 					dataType: 'string',
 					fieldNumber: 7,
 				},
+            },
+        };
+    }
+
+	public getVotersResponseSchema() {
+        return {
+            $id: 'voting/getVotersResponse',
+            type: 'object',
+            properties: {
+               
             },
         };
     }

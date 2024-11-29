@@ -24,19 +24,21 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 	public async getPollOptionsVote(
 		ctx: Types.ModuleEndpointContext,
 	): Promise<{ pollMessage: PollStoreData; pollOptionMessage: Partial<PollOptionStoreData> }> {
+		const { pollId: paramPollId, text } = ctx.params;
+
 		const pollStore = this.stores.get(PollStore);
 		const pollOptionsStore = this.stores.get(PollOptionsStore);
 
 		let pollMessage: PollStoreData;
 		try {
-			pollMessage = await pollStore.get(ctx, Buffer.from('pollId'));
+			pollMessage = await pollStore.get(ctx, Buffer.from(paramPollId as string));
 		} catch (error) {
 			pollMessage = { pollId: '', title: '', description: '', pollCreator: '', expiresAt: '' };
 		}
 		// Get the poll message for the address from the store
 		let pollOptionMessageWithoutPollId: PollOptionStoreData;
 		try {
-			pollOptionMessageWithoutPollId = await pollOptionsStore.get(ctx, Buffer.from('text'));
+			pollOptionMessageWithoutPollId = await pollOptionsStore.get(ctx, Buffer.from(text as string));
 		} catch (error) {
 			pollOptionMessageWithoutPollId = { pollId: '', text: '', votes: 0 };
 		}
@@ -47,10 +49,11 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 	}
 
 	public async getVoters(ctx: Types.ModuleEndpointContext): Promise<VoteStoreData> {
-		const voters = this.stores.get(VoteStore);
+		const voterStore = this.stores.get(VoteStore);
 		let voteMessage: VoteStoreData;
 		try {
-			voteMessage = await voters.get(ctx, Buffer.from('userId'));
+			const { userId } = ctx.params;
+			voteMessage = await voterStore.get(ctx, Buffer.from(userId as string));
 		} catch (error) {
 			voteMessage = { pollId: '', userId: '', voter: '', text: '' };
 		}
