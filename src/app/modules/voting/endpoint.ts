@@ -1,4 +1,4 @@
-import { Modules, Types, cryptography } from 'klayr-sdk';
+import { Modules, Types } from 'klayr-sdk';
 import { PollStore, PollStoreData } from './stores/poll';
 import { PollOptionStoreData, PollOptionsStore } from './stores/pollOptions';
 import { VoteStore, VoteStoreData } from './stores/vote';
@@ -6,18 +6,8 @@ import { VoteStore, VoteStoreData } from './stores/vote';
 export class VotingEndpoint extends Modules.BaseEndpoint {
 	public async getPoll(ctx: Types.ModuleEndpointContext): Promise<PollStoreData> {
 		const pollStore = this.stores.get(PollStore);
-
-		const { address } = ctx.params;
-
-		if (typeof address !== 'string') {
-			throw new Error('Parameter address must be a string.');
-		}
-		cryptography.address.validateKlayr32Address(address);
-
-		const pollMessage = await pollStore.get(
-			ctx,
-			cryptography.address.getAddressFromKlayr32Address(address),
-		);
+		const { pollId } = ctx.params;
+		const pollMessage = await pollStore.get(ctx, Buffer.from(pollId as string));
 		return pollMessage;
 	}
 
@@ -25,6 +15,12 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 		ctx: Types.ModuleEndpointContext,
 	): Promise<{ pollMessage: PollStoreData; pollOptionMessage: Partial<PollOptionStoreData> }> {
 		const { pollId: paramPollId, text } = ctx.params;
+
+		if (!paramPollId && text) {
+			throw new Error(
+				'The operation cannot be performed, provide the pollId and text to get poll options',
+			);
+		}
 
 		const pollStore = this.stores.get(PollStore);
 		const pollOptionsStore = this.stores.get(PollOptionsStore);
@@ -50,10 +46,10 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 
 	public async getVoters(ctx: Types.ModuleEndpointContext): Promise<VoteStoreData> {
 		const voterStore = this.stores.get(VoteStore);
+		const { userId } = ctx.params as { userId: string };
 		let voteMessage: VoteStoreData;
 		try {
-			const { userId } = ctx.params;
-			voteMessage = await voterStore.get(ctx, Buffer.from(userId as string));
+			voteMessage = await voterStore.get(ctx, Buffer.from(userId));
 		} catch (error) {
 			voteMessage = { pollId: '', userId: '', voter: '', text: '' };
 		}
