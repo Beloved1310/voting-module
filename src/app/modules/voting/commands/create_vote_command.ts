@@ -54,7 +54,7 @@ export class CreateVoteCommand extends Modules.BaseCommand {
 		// let pollVote: PollOptionStoreData;
 
 		// 3. Get the poll counter from the counter store.
-		pollVote = await pollOptionStore.get(_context, Buffer.from('text'));
+		pollVote = await pollOptionStore.get(_context, Buffer.from(text));
 		// try {
 		// 	//can't someone get by pollId if you do not sign by the pollId
 		// 	pollVote = await pollOptionStore.get(_context, pollCreator);
