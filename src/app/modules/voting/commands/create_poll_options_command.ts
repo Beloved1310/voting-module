@@ -41,7 +41,7 @@ export class CreatePollOptionsCommand extends Modules.BaseCommand {
 		const currentDate = new Date();
 		const currentDateString = currentDate.toISOString().split('T')[0];
 
-		const pollStoreData = await pollStore.get(_context, Buffer.from('pollId'));
+		const pollStoreData = await pollStore.get(_context, Buffer.from(pollId));
 		if (currentDateString > pollStoreData.expiresAt) {
 			throw new Error('This Poll is expired');
 		}
