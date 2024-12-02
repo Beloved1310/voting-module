@@ -47,6 +47,13 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 	public async getVoters(ctx: Types.ModuleEndpointContext): Promise<VoteStoreData> {
 		const voterStore = this.stores.get(VoteStore);
 		const { userId } = ctx.params as { userId: string };
+
+		if (!userId) {
+			throw new Error(
+				'The operation cannot be performed, provide the userId to get the voter',
+			);
+		}
+
 		let voteMessage: VoteStoreData;
 		try {
 			voteMessage = await voterStore.get(ctx, Buffer.from(userId));
