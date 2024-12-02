@@ -53,14 +53,14 @@ export class CreateVoteCommand extends Modules.BaseCommand {
 		const voterString = senderAddress.toString();
 		// let pollVote: PollOptionStoreData;
 
+		const voter = await voteStore.get(_context, Buffer.from(userId));
+
+		if (userId == voter.userId) {
+			throw new Error('You have already voted');
+		}
+
 		// 3. Get the poll counter from the counter store.
 		pollVote = await pollOptionStore.get(_context, Buffer.from(text));
-		// try {
-		// 	//can't someone get by pollId if you do not sign by the pollId
-		// 	pollVote = await pollOptionStore.get(_context, pollCreator);
-		// } catch (error) {
-		// 	pollVote.votes = 0,
-		// }
 		pollVote.votes += 1;
 		const newVoter: VoteStoreData = {
 			pollId,
