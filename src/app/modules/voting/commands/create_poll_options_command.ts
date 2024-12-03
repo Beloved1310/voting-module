@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Modules, StateMachine } from 'klayr-sdk';
 import { PollOptionsStore, PollOptionStoreData } from '../stores/pollOptions';
-import { PollStore } from '../stores/poll';
 
 interface Params {
 	pollId: string;
@@ -20,7 +19,6 @@ export class CreatePollOptionsCommand extends Modules.BaseCommand {
 			text: {
 				dataType: 'string',
 				fieldNumber: 2,
-				minLength: 3,
 				maxLength: 200,
 			},
 		},
@@ -35,22 +33,17 @@ export class CreatePollOptionsCommand extends Modules.BaseCommand {
 
 	public async execute(_context: StateMachine.CommandExecuteContext<Params>): Promise<void> {
 		const { pollId, text } = _context.params;
-		// const { senderAddress } = _context.transaction;
-		const pollOptionStore = this.stores.get(PollOptionsStore);
-		const pollStore = this.stores.get(PollStore);
-		const currentDate = new Date();
-		const currentDateString = currentDate.toISOString().split('T')[0];
 
-		const pollStoreData = await pollStore.get(_context, Buffer.from(pollId));
-		if (currentDateString > pollStoreData.expiresAt) {
-			throw new Error('This Poll is expired');
-		}
+		const pollOptionStore = this.stores.get(PollOptionsStore);
 		const newPollOption: PollOptionStoreData = {
 			pollId,
 			text,
 			votes: 0,
 		};
-
-		await pollOptionStore.set(_context, Buffer.from(text), newPollOption);
+		try {
+			await pollOptionStore.set(_context, Buffer.from(text), newPollOption);
+		} catch (error) {
+			_context.logger.info(error);
+		}
 	}
 }
