@@ -21,7 +21,7 @@ export const pollOptionStoreSchema = {
 			fieldNumber: 2,
 		},
 		votes: {
-			dataType: 'string',
+			dataType: 'uint32',
 			fieldNumber: 3,
 		},
 	},

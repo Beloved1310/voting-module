@@ -4,7 +4,6 @@ import { Modules } from 'klayr-sdk';
 export interface VoteStoreData {
     pollId: string;  
     userId: string;
-    voter: string;  
     text: string;
 }
 
@@ -22,13 +21,9 @@ export const voteStoreSchema = {
             dataType: 'string',
             fieldNumber: 2,
         },
-        voter: {
-            dataType: 'string',
-            fieldNumber: 3,
-        },
         text: {
             dataType: 'string',
-            fieldNumber: 4,
+            fieldNumber: 3,
         },
     },
 };
