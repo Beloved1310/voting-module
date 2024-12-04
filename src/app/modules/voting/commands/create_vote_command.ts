@@ -9,7 +9,6 @@ interface Params {
 	userId: string;
 	text: string;
 }
-let pollVote: PollOptionStoreData;
 
 export const createVoteSchema = {
 	$id: 'voting/createVote',
@@ -42,30 +41,29 @@ export class CreateVoteCommand extends Modules.BaseCommand {
 	public async verify(
 		_context: StateMachine.CommandVerifyContext<Params>,
 	): Promise<StateMachine.VerificationResult> {
-		return { status: StateMachine.VerifyStatus.OK };
+		const { userId } = _context.params;
+		const voteStore = this.stores.get(VoteStore);
+		const voter = await voteStore.get(_context, Buffer.from(userId));
+		if (voter) {
+			_context.logger.info('==== FOUND: voter ====');
+			throw new Error(`You have already voted`);
+		} else {
+			_context.logger.info('==== NotFOUND: new voter ====');
+			return { status: StateMachine.VerifyStatus.OK };
+		}
 	}
 
 	public async execute(_context: StateMachine.CommandExecuteContext<Params>): Promise<void> {
 		const { pollId, userId, text } = _context.params;
-		const { senderAddress } = _context.transaction;
 		const pollOptionStore = this.stores.get(PollOptionsStore);
 		const voteStore = this.stores.get(VoteStore);
-		const voterString = senderAddress.toString();
-		// let pollVote: PollOptionStoreData;
-
-		const voter = await voteStore.get(_context, Buffer.from(userId));
-
-		if (userId == voter.userId) {
-			throw new Error('You have already voted');
-		}
-
+		let pollVote: PollOptionStoreData;
 		// 3. Get the poll counter from the counter store.
 		pollVote = await pollOptionStore.get(_context, Buffer.from(text));
 		pollVote.votes += 1;
 		const newVoter: VoteStoreData = {
 			pollId,
 			userId,
-			voter: voterString,
 			text,
 		};
 		// 6. Save the poll options to the poll store.

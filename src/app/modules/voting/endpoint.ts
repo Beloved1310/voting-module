@@ -58,7 +58,7 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 		try {
 			voteMessage = await voterStore.get(ctx, Buffer.from(userId));
 		} catch (error) {
-			voteMessage = { pollId: '', userId: '', voter: '', text: '' };
+			voteMessage = { pollId: '', userId: '', text: '' };
 		}
 
 		return voteMessage;
