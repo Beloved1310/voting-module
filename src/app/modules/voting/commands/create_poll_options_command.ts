@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { Modules, StateMachine } from 'klayr-sdk';
 import { PollOptionsStore, PollOptionStoreData } from '../stores/pollOptions';
+import { PollStore } from '../stores/poll';
 
 interface Params {
 	pollId: string;
@@ -28,6 +29,15 @@ export class CreatePollOptionsCommand extends Modules.BaseCommand {
 	public async verify(
 		_context: StateMachine.CommandVerifyContext<Params>,
 	): Promise<StateMachine.VerificationResult> {
+		const { pollId } = _context.params;
+		const currentDate = _context.header.timestamp;
+		const pollStore = this.stores.get(PollStore);
+		const poll = await pollStore.get(_context, Buffer.from(pollId));
+		if (poll.timestamp < currentDate) {
+			_context.logger.info('==== FOUND: poll expired ====');
+			throw new Error(`You cannot create poll options for this poll`);
+		}
+
 		return { status: StateMachine.VerifyStatus.OK };
 	}
 
