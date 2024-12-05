@@ -7,6 +7,11 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 	public async getPoll(ctx: Types.ModuleEndpointContext): Promise<PollStoreData> {
 		const pollStore = this.stores.get(PollStore);
 		const { pollId } = ctx.params;
+
+		if (!pollId) {
+			throw new Error('The operation cannot be performed, provide the pollId to get the poll');
+		}
+
 		const pollMessage = await pollStore.get(ctx, Buffer.from(pollId as string));
 		return pollMessage;
 	}
@@ -29,7 +34,7 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 		try {
 			pollMessage = await pollStore.get(ctx, Buffer.from(paramPollId as string));
 		} catch (error) {
-			pollMessage = { pollId: '', title: '', description: '', pollCreator: '', expiresAt: '' };
+			pollMessage = { pollId: '', title: '', description: '', pollCreator: '', timestamp: 0 };
 		}
 		// Get the poll message for the address from the store
 		let pollOptionMessageWithoutPollId: PollOptionStoreData;
@@ -49,9 +54,7 @@ export class VotingEndpoint extends Modules.BaseEndpoint {
 		const { userId } = ctx.params as { userId: string };
 
 		if (!userId) {
-			throw new Error(
-				'The operation cannot be performed, provide the userId to get the voter',
-			);
+			throw new Error('The operation cannot be performed, provide the userId to get the voter');
 		}
 
 		let voteMessage: VoteStoreData;
