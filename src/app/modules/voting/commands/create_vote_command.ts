@@ -32,8 +32,6 @@ export const createVoteSchema = {
 	},
 };
 // --if voting has expired
-// --vote one text
-// --user has not voted before
 export class CreateVoteCommand extends Modules.BaseCommand {
 	public schema = createVoteSchema;
 
@@ -43,7 +41,7 @@ export class CreateVoteCommand extends Modules.BaseCommand {
 	): Promise<StateMachine.VerificationResult> {
 		const { userId } = _context.params;
 		const voteStore = this.stores.get(VoteStore);
-		const voter = await voteStore.get(_context, Buffer.from(userId));
+		const voter = await voteStore.has(_context, Buffer.from(userId));
 		if (voter) {
 			_context.logger.info('==== FOUND: voter ====');
 			throw new Error(`You have already voted`);
