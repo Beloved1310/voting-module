@@ -69,7 +69,7 @@ http://localhost:7887
 ### Create Poll
 
 ```
-./bin/run transaction:create voting createPoll 10000000 --params='{"pollId": "1", "title":"Favorite Programming Language new",  "description": "Vote for your new  favorite programming language", "expiresAt": "2024-12-23"}' --json --pretty
+./bin/run transaction:create voting createPoll 10000000 --params='{"pollId": "1", "title":"Favorite Programming Language new",  "description": "Vote for your new  favorite programming language", "timestamp": 1734998400}'
 ```
 
 ### Send the created transaction
@@ -81,7 +81,7 @@ http://localhost:7887
 ### Create Poll Options:
 
 ```
-./bin/run transaction:create voting createPollOptions 10000000 --params='{"pollId": "1", "text":"Javascript"}' --json --pretty
+./bin/run transaction:create voting createPollOptions 10000000 --params='{"pollId": "1", "text":"C++"}' --json --pretty
 ```
 
 ### Send the created transaction
@@ -93,7 +93,7 @@ http://localhost:7887
 ### Create Vote for Poll Options:
 
 ```
-./bin/run transaction:create voting createVote 10000000 --params='{"pollId": "1","userId": "1", "text":"Javascript"}' --json --pretty
+./bin/run transaction:create voting createVote 10000000 --params='{"pollId": "1","userId": "1", "text":"C++"}' --json --pretty
 
 ```
 
@@ -112,7 +112,7 @@ http://localhost:7887
 ### Get VotingOptions
 
 ```
-./bin/run endpoint:invoke voting_getPollOptionsVote '{"pollId": "1", "text": "Javascript"}'
+./bin/run endpoint:invoke voting_getPollOptionsVote '{"pollId": "1", "text": "C++"}'
 ```
 
 ### Get Voter
@@ -124,6 +124,7 @@ http://localhost:7887
 ## Future Improvements
 
 - Allow ranked-choice or weighted voting mechanisms.
+- Expiration Poll not accepting vote
 
 ## License
 

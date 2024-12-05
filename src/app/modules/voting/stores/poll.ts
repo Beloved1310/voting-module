@@ -6,14 +6,14 @@ export interface PollStoreData {
 	title: string;
 	description: string;
 	pollCreator: string; 
-	expiresAt: string;
+	timestamp: number;
 }
 
 // Define the schema for the poll store
 export const pollStoreSchema = {
 	$id: 'voting/polls',
 	type: 'object',
-	required: ['pollId', 'title', 'description', 'pollCreator', 'expiresAt'],
+	required: ['pollId', 'title', 'description', 'pollCreator', 'timestamp'],
 	properties: {
 		pollId: {
 			dataType: 'string',
@@ -31,10 +31,10 @@ export const pollStoreSchema = {
 			dataType: 'string',
 			fieldNumber: 4,
 		},
-		expiresAt: {
-			dataType: 'string',
+		timestamp: {
+			dataType: 'uint32',
 			fieldNumber: 5,
-		},
+		}
 	},
 };
 

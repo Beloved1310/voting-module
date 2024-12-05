@@ -7,14 +7,14 @@ interface Params {
 	pollCreator: string;
 	title: string;
 	description: string;
-	expiresAt: string;
+	timestamp: number;
 }
 
 export const createPollSchema = {
 	$id: 'voting/createPoll',
 	type: 'object',
 	title: 'CreatePollCommand transaction parameter for the Voting module',
-	required: ['pollId', 'title', 'description', 'expiresAt'],
+	required: ['pollId', 'title', 'description', 'timestamp'],
 	properties: {
 		pollId: {
 			dataType: 'string',
@@ -32,8 +32,8 @@ export const createPollSchema = {
 			minLength: 3,
 			maxLength: 256,
 		},
-		expiresAt: {
-			dataType: 'string',
+		timestamp: {
+			dataType: 'uint32',
 			fieldNumber: 4,
 		},
 	},
@@ -49,7 +49,7 @@ export class CreatePollCommand extends Modules.BaseCommand {
 	}
 
 	public async execute(_context: StateMachine.CommandExecuteContext<Params>): Promise<void> {
-		const { pollId, title, description, expiresAt } = _context.params;
+		const { pollId, title, description, timestamp } = _context.params;
 		const { senderAddress } = _context.transaction;
 		const pollStore = this.stores.get(PollStore);
 		const pollCreator = senderAddress.toString();
@@ -59,7 +59,7 @@ export class CreatePollCommand extends Modules.BaseCommand {
 			title,
 			description,
 			pollCreator,
-			expiresAt,
+			timestamp,
 		};
 
 		await pollStore.set(_context, Buffer.from(pollId), newPoll);
